@@ -1,0 +1,66 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@theme {
+  --color-background: hsl(0 0% 100%);
+  --color-foreground: hsl(224 71% 20%);
+  --color-card: hsl(0 0% 100%);
+  --color-card-foreground: hsl(224 71% 20%);
+  --color-popover: hsl(0 0% 100%);
+  --color-popover-foreground: hsl(224 71% 20%);
+  --color-primary: hsl(221 83% 53%);
+  --color-primary-foreground: hsl(0 0% 100%);
+  --color-secondary: hsl(196 92% 50%);
+  --color-secondary-foreground: hsl(0 0% 100%);
+  --color-muted: hsl(220 13% 91%);
+  --color-muted-foreground: hsl(215 16% 47%);
+  --color-accent: hsl(262 80% 50%);
+  --color-accent-foreground: hsl(0 0% 100%);
+  --color-destructive: hsl(0 84% 60%);
+  --color-destructive-foreground: hsl(0 0% 100%);
+  --color-border: hsl(220 13% 91%);
+  --color-input: hsl(220 13% 91%);
+  --color-ring: hsl(221 83% 53%);
+  --color-chart-1: hsl(221 83% 53%);
+  --color-chart-2: hsl(196 92% 50%);
+  --color-chart-3: hsl(262 80% 50%);
+  --color-chart-4: hsl(48 96% 53%);
+  --color-chart-5: hsl(0 84% 60%);
+  --radius: 0.5rem;
+}
+
+@dark {
+  --color-background: hsl(224 71% 11%);
+  --color-foreground: hsl(0 0% 98%);
+  --color-card: hsl(224 71% 15%);
+  --color-card-foreground: hsl(0 0% 98%);
+  --color-popover: hsl(224 71% 15%);
+  --color-popover-foreground: hsl(0 0% 98%);
+  --color-primary: hsl(221 83% 65%);
+  --color-primary-foreground: hsl(224 71% 11%);
+  --color-secondary: hsl(196 92% 60%);
+  --color-secondary-foreground: hsl(224 71% 11%);
+  --color-muted: hsl(224 71% 25%);
+  --color-muted-foreground: hsl(215 14% 62%);
+  --color-accent: hsl(262 80% 65%);
+  --color-accent-foreground: hsl(224 71% 11%);
+  --color-destructive: hsl(0 84% 70%);
+  --color-destructive-foreground: hsl(224 71% 11%);
+  --color-border: hsl(224 71% 25%);
+  --color-input: hsl(224 71% 25%);
+  --color-ring: hsl(221 83% 65%);
+  --color-chart-1: hsl(221 83% 65%);
+  --color-chart-2: hsl(196 92% 60%);
+  --color-chart-3: hsl(262 80% 65%);
+  --color-chart-4: hsl(48 96% 65%);
+  --color-chart-5: hsl(0 84% 70%);
+}
+
+@layer base {
+  html {
+    @apply scroll-smooth;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
