@@ -24,10 +24,7 @@ export function Header() {
     <header className="border-b bg-card">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <Link href="/dashboard" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">TB</span>
-            </div>
+          <Link href="/dashboard" className="flex items-center">
             <span className="font-bold text-lg text-primary">Task Buddy</span>
           </Link>
 
