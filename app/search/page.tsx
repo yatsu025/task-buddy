@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Header } from '@/components/header'
 import { TaskCard } from '@/components/task-card'
@@ -12,6 +12,21 @@ import { getUserTasks, Task, initializeDemoTasks } from '@/lib/tasks'
 import Link from 'next/link'
 
 export default function SearchPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="flex items-center justify-center h-96">
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    }>
+      <SearchContent />
+    </Suspense>
+  )
+}
+
+function SearchContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const initialQuery = searchParams.get('q') || ''
