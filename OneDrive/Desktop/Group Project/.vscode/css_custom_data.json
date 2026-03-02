@@ -1,0 +1,21 @@
+{
+  "version": 1.1,
+  "atDirectives": [
+    {
+      "name": "@theme",
+      "description": "Tailwind CSS v4 theme directive for defining design tokens"
+    },
+    {
+      "name": "@dark",
+      "description": "Tailwind CSS v4 dark mode variant"
+    },
+    {
+      "name": "@apply",
+      "description": "Tailwind CSS apply directive for inline utility classes"
+    },
+    {
+      "name": "@layer",
+      "description": "Tailwind CSS layer directive"
+    }
+  ]
+}
