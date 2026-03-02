@@ -1,16 +1,17 @@
 'use client'
 
 import { Header } from '@/components/header'
+import { Footer } from '@/components/footer'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col transition-colors duration-300">
       <Header />
 
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-12">
           <h1 className="text-4xl font-bold text-foreground mb-4">About Task Buddy</h1>
           <p className="text-lg text-muted-foreground">
@@ -106,6 +107,8 @@ export default function AboutPage() {
           </Link>
         </Card>
       </main>
+
+      <Footer />
     </div>
   )
 }

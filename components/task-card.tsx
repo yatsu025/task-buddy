@@ -9,9 +9,12 @@ interface TaskCardProps {
   task: Task
   onUpdate?: (task: Task) => void
   onDelete?: (taskId: string) => void
+  /** Visual variant for completed tasks (muted, checkmark, strikethrough) */
+  variant?: 'default' | 'completed'
 }
 
-export function TaskCard({ task, onUpdate, onDelete }: TaskCardProps) {
+export function TaskCard({ task, onUpdate, onDelete, variant = 'default' }: TaskCardProps) {
+  const isCompleted = variant === 'completed' || task.status === 'completed'
   const handleStatusChange = (newStatus: Task['status']) => {
     const updated = updateTask(task.id, { status: newStatus })
     if (updated && onUpdate) {
@@ -41,11 +44,16 @@ export function TaskCard({ task, onUpdate, onDelete }: TaskCardProps) {
   }
 
   return (
-    <Card className="p-4 hover:shadow-md transition">
+    <Card className={`p-4 hover:shadow-md transition ${isCompleted ? 'opacity-90 bg-muted/30' : ''}`}>
       <Link href={`/tasks/${task.id}`}>
         <div className="cursor-pointer">
           <div className="flex items-start justify-between mb-2">
-            <h3 className="font-semibold text-lg text-foreground line-clamp-2">{task.title}</h3>
+            <h3 className={`font-semibold text-lg line-clamp-2 ${isCompleted ? 'text-muted-foreground line-through' : 'text-foreground'}`}>
+              {isCompleted && (
+                <span className="inline-flex items-center mr-2 text-green-600 dark:text-green-400" aria-hidden>✓ </span>
+              )}
+              {task.title}
+            </h3>
             <span className={`text-xs font-medium px-2 py-1 rounded whitespace-nowrap ${priorityColors[task.priority]}`}>
               {task.priority}
             </span>

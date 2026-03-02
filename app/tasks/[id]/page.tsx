@@ -3,11 +3,27 @@
 import { useEffect, useState } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { Header } from '@/components/header'
+import { Footer } from '@/components/footer'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
-import { isAuthenticated, getCurrentUser } from '@/lib/auth'
-import { getTask, updateTask, deleteTask, Task } from '@/lib/tasks'
+import { isAuthenticated } from '@/lib/auth'
+import {
+  getTask,
+  updateTask,
+  deleteTask,
+  Task,
+  getTaskDurationMinutes,
+  formatTaskDurationFull
+} from '@/lib/tasks'
+
+function formatDateTime(dateStr: string | null, timeStr: string | null): string {
+  if (!dateStr) return '—'
+  const d = new Date(dateStr)
+  const dateFormatted = d.toLocaleDateString()
+  if (!timeStr) return dateFormatted
+  return `${dateFormatted} at ${timeStr}`
+}
 
 export default function TaskDetailPage() {
   const router = useRouter()
@@ -63,11 +79,12 @@ export default function TaskDetailPage() {
 
   if (isLoading || !task) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-background flex flex-col">
         <Header />
-        <div className="flex items-center justify-center h-96">
+        <div className="flex-1 flex items-center justify-center h-96">
           <p className="text-muted-foreground">Loading...</p>
         </div>
+        <Footer />
       </div>
     )
   }
@@ -78,11 +95,14 @@ export default function TaskDetailPage() {
     low: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
   }
 
+  const durationMinutes = getTaskDurationMinutes(task)
+  const durationDisplay = durationMinutes !== null ? formatTaskDurationFull(durationMinutes) : null
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col transition-colors duration-300">
       <Header />
 
-      <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="flex-1 max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
         <Button
           variant="ghost"
           onClick={() => router.push('/tasks')}
@@ -91,7 +111,7 @@ export default function TaskDetailPage() {
           ← Back to Tasks
         </Button>
 
-        <Card className="p-6">
+        <Card className="p-6 border-border">
           {isEditing ? (
             <div className="space-y-4">
               <div>
@@ -119,7 +139,7 @@ export default function TaskDetailPage() {
                   <label className="text-sm font-medium block mb-1">Priority</label>
                   <select
                     value={editedTask.priority || 'medium'}
-                    onChange={(e) => setEditedTask({ ...editedTask, priority: e.target.value as any })}
+                    onChange={(e) => setEditedTask({ ...editedTask, priority: e.target.value as Task['priority'] })}
                     className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
                   >
                     <option value="low">Low</option>
@@ -132,7 +152,7 @@ export default function TaskDetailPage() {
                   <label className="text-sm font-medium block mb-1">Status</label>
                   <select
                     value={editedTask.status || 'pending'}
-                    onChange={(e) => setEditedTask({ ...editedTask, status: e.target.value as any })}
+                    onChange={(e) => setEditedTask({ ...editedTask, status: e.target.value as Task['status'] })}
                     className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
                   >
                     <option value="pending">Pending</option>
@@ -147,8 +167,48 @@ export default function TaskDetailPage() {
                 <Input
                   type="date"
                   value={editedTask.dueDate || ''}
-                  onChange={(e) => setEditedTask({ ...editedTask, dueDate: e.target.value })}
+                  onChange={(e) => setEditedTask({ ...editedTask, dueDate: e.target.value || null })}
                 />
+              </div>
+
+              {/* Start Date & Time */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium block mb-1">Start Date</label>
+                  <Input
+                    type="date"
+                    value={editedTask.startDate || ''}
+                    onChange={(e) => setEditedTask({ ...editedTask, startDate: e.target.value || null })}
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium block mb-1">Start Time</label>
+                  <Input
+                    type="time"
+                    value={editedTask.startTime || ''}
+                    onChange={(e) => setEditedTask({ ...editedTask, startTime: e.target.value || null })}
+                  />
+                </div>
+              </div>
+
+              {/* End Date & Time */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium block mb-1">End Date</label>
+                  <Input
+                    type="date"
+                    value={editedTask.endDate || ''}
+                    onChange={(e) => setEditedTask({ ...editedTask, endDate: e.target.value || null })}
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium block mb-1">End Time</label>
+                  <Input
+                    type="time"
+                    value={editedTask.endTime || ''}
+                    onChange={(e) => setEditedTask({ ...editedTask, endTime: e.target.value || null })}
+                  />
+                </div>
               </div>
 
               <div className="flex gap-2">
@@ -185,6 +245,30 @@ export default function TaskDetailPage() {
                   </div>
                 </div>
 
+                {/* Start Date & Time */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-1">Start Date & Time</h3>
+                    <p className="text-foreground">
+                      {formatDateTime(task.startDate, task.startTime)}
+                    </p>
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-1">End Date & Time</h3>
+                    <p className="text-foreground">
+                      {formatDateTime(task.endDate, task.endTime)}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Total Duration */}
+                {durationDisplay && (
+                  <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
+                    <h3 className="text-sm font-medium text-muted-foreground mb-1">Total Time Taken</h3>
+                    <p className="text-lg font-semibold text-primary">{durationDisplay}</p>
+                  </div>
+                )}
+
                 {task.tags.length > 0 && (
                   <div>
                     <h3 className="text-sm font-medium text-muted-foreground mb-2">Tags</h3>
@@ -214,6 +298,8 @@ export default function TaskDetailPage() {
           )}
         </Card>
       </main>
+
+      <Footer />
     </div>
   )
 }

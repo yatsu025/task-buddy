@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Header } from '@/components/header'
+import { Footer } from '@/components/footer'
 import { TaskForm } from '@/components/task-form'
 import { TaskCard } from '@/components/task-card'
 import { getCurrentUser, isAuthenticated, initializeDemoUsers } from '@/lib/auth'
@@ -65,20 +66,21 @@ export default function TasksPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-background flex flex-col">
         <Header />
-        <div className="flex items-center justify-center h-96">
+        <div className="flex-1 flex items-center justify-center h-96">
           <p className="text-muted-foreground">Loading...</p>
         </div>
+        <Footer />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col transition-colors duration-300">
       <Header />
       
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-foreground mb-2">Tasks</h1>
           <p className="text-muted-foreground">Manage and track all your tasks</p>
@@ -136,6 +138,8 @@ export default function TasksPage() {
           </div>
         )}
       </main>
+
+      <Footer />
     </div>
   )
 }
