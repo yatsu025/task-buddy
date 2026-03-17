@@ -63,9 +63,18 @@ export default function DashboardPage() {
       <Header />
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
+        <div className="mb-6">
           <h1 className="text-4xl font-bold text-foreground mb-2">Welcome back, {user.name}!</h1>
           <p className="text-muted-foreground">Here&apos;s your task summary for today</p>
+        </div>
+        <div className="mb-6 max-w-md">
+          <label htmlFor="task-search-input" className="sr-only">Search tasks</label>
+          <input
+            id="task-search-input"
+            type="search"
+            placeholder="Search your tasks..."
+            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground focus:border-primary focus:ring-2 focus:ring-primary/50"
+          />
         </div>
 
         {/* Stats Cards */}

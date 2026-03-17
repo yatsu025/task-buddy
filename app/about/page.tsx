@@ -1,5 +1,7 @@
 'use client'
 
+import { useEffect } from 'react'
+import { useTheme } from 'next-themes'
 import { Header } from '@/components/header'
 import { Footer } from '@/components/footer'
 import { Card } from '@/components/ui/card'
@@ -7,6 +9,20 @@ import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 
 export default function AboutPage() {
+  const { theme, setTheme } = useTheme()
+
+  useEffect(() => {
+    const handleShortcut = (e: KeyboardEvent) => {
+      if (e.key === 'd' || e.key === 'D') {
+        e.preventDefault()
+        setTheme(theme === 'dark' ? 'light' : 'dark')
+      }
+    }
+
+    window.addEventListener('keydown', handleShortcut)
+    return () => window.removeEventListener('keydown', handleShortcut)
+  }, [theme, setTheme])
+
   return (
     <div className="min-h-screen bg-background flex flex-col transition-colors duration-300">
       <Header />

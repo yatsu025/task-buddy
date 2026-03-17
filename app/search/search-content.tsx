@@ -42,7 +42,8 @@ export function SearchContent() {
     if (currentUser) {
       const userTasks = getUserTasks(currentUser.id)
       setAllTasks(userTasks)
-      
+      setResults(userTasks)
+
       // Extract all unique tags
       const allTags = new Set<string>()
       userTasks.forEach(task => {
@@ -58,27 +59,30 @@ export function SearchContent() {
   useEffect(() => {
     let filtered = allTasks
 
-    // Text search
-    if (query.trim()) {
-      const lowerQuery = query.toLowerCase()
-      filtered = filtered.filter(task =>
-        task.title.toLowerCase().includes(lowerQuery) ||
-        task.description.toLowerCase().includes(lowerQuery) ||
-        task.tags.some(tag => tag.toLowerCase().includes(lowerQuery))
-      )
+    const normalizedQuery = query.trim().toLowerCase()
+
+    if (normalizedQuery) {
+      filtered = filtered.filter(task => {
+        const title = task.title?.toLowerCase() ?? ''
+        const description = task.description?.toLowerCase() ?? ''
+        const tags = task.tags?.map(tag => tag.toLowerCase()) ?? []
+
+        return (
+          title.includes(normalizedQuery) ||
+          description.includes(normalizedQuery) ||
+          tags.some(tag => tag.includes(normalizedQuery))
+        )
+      })
     }
 
-    // Filter by tag
     if (filterTag) {
       filtered = filtered.filter(task => task.tags.includes(filterTag))
     }
 
-    // Filter by priority
     if (filterPriority !== 'all') {
       filtered = filtered.filter(task => task.priority === filterPriority)
     }
 
-    // Filter by status
     if (filterStatus !== 'all') {
       filtered = filtered.filter(task => task.status === filterStatus)
     }
@@ -124,6 +128,7 @@ export function SearchContent() {
         <form onSubmit={handleSearch} className="mb-8">
           <div className="flex gap-2">
             <Input
+              id="task-search-input"
               type="text"
               placeholder="Search tasks by title, description, or tags..."
               value={query}

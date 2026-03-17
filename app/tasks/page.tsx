@@ -1,19 +1,23 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Header } from '@/components/header'
 import { Footer } from '@/components/footer'
 import { TaskForm } from '@/components/task-form'
 import { TaskCard } from '@/components/task-card'
+import { Input } from '@/components/ui/input'
 import { getCurrentUser, isAuthenticated, initializeDemoUsers } from '@/lib/auth'
 import { getUserTasks, Task, initializeDemoTasks } from '@/lib/tasks'
 
 export default function TasksPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const openNewTask = searchParams.get('newTask') === '1'
   const [user, setUser] = useState<any>(null)
   const [tasks, setTasks] = useState<Task[]>([])
   const [filteredTasks, setFilteredTasks] = useState<Task[]>([])
+  const [query, setQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'in-progress' | 'completed'>('all')
   const [priorityFilter, setPriorityFilter] = useState<'all' | 'low' | 'medium' | 'high'>('all')
   const [isLoading, setIsLoading] = useState(true)
@@ -40,6 +44,21 @@ export default function TasksPage() {
 
   useEffect(() => {
     let filtered = tasks
+    const normalizedQuery = query.trim().toLowerCase()
+
+    if (normalizedQuery) {
+      filtered = filtered.filter((task) => {
+        const title = task.title?.toLowerCase() ?? ''
+        const description = task.description?.toLowerCase() ?? ''
+        const tags = task.tags?.map((tag) => tag.toLowerCase()) ?? []
+
+        return (
+          title.includes(normalizedQuery) ||
+          description.includes(normalizedQuery) ||
+          tags.some((tag) => tag.includes(normalizedQuery))
+        )
+      })
+    }
 
     if (statusFilter !== 'all') {
       filtered = filtered.filter(task => task.status === statusFilter)
@@ -50,7 +69,7 @@ export default function TasksPage() {
     }
 
     setFilteredTasks(filtered)
-  }, [tasks, statusFilter, priorityFilter])
+  }, [tasks, query, statusFilter, priorityFilter])
 
   const handleTaskCreated = (newTask: Task) => {
     setTasks([newTask, ...tasks])
@@ -86,9 +105,21 @@ export default function TasksPage() {
           <p className="text-muted-foreground">Manage and track all your tasks</p>
         </div>
 
-        <TaskForm userId={user?.id} onTaskCreated={handleTaskCreated} />
+        <TaskForm userId={user?.id} onTaskCreated={handleTaskCreated} defaultOpen={openNewTask} />
 
-        <div className="bg-card rounded-lg border p-4 mb-6">
+        <div className="bg-card rounded-lg border p-4 mb-6 space-y-4">
+          <div>
+            <label htmlFor="task-search-input" className="text-sm font-medium block mb-2">Search Tasks</label>
+            <Input
+              id="task-search-input"
+              type="text"
+              placeholder="Search your tasks by title, description, or tags..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              className="w-full"
+            />
+          </div>
+
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1">
               <label className="text-sm font-medium block mb-2">Status Filter</label>

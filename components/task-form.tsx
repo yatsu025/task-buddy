@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card } from '@/components/ui/card'
@@ -9,10 +9,17 @@ import { createTask, Task } from '@/lib/tasks'
 interface TaskFormProps {
   userId: string
   onTaskCreated?: (task: Task) => void
+  defaultOpen?: boolean
 }
 
-export function TaskForm({ userId, onTaskCreated }: TaskFormProps) {
-  const [isOpen, setIsOpen] = useState(false)
+export function TaskForm({ userId, onTaskCreated, defaultOpen = false }: TaskFormProps) {
+  const [isOpen, setIsOpen] = useState(defaultOpen)
+
+  useEffect(() => {
+    if (defaultOpen) {
+      setIsOpen(true)
+    }
+  }, [defaultOpen])
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [priority, setPriority] = useState<'low' | 'medium' | 'high'>('medium')

@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Header } from '@/components/header'
 import { Footer } from '@/components/footer'
 import { Card } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 
@@ -68,9 +69,64 @@ const faqs: FAQItem[] = [
 
 export default function HelpPage() {
   const [expandedId, setExpandedId] = useState<string | null>(null)
+  const [contactName, setContactName] = useState('')
+  const [contactEmail, setContactEmail] = useState('')
+  const [contactMessage, setContactMessage] = useState('')
+  const [contactStatus, setContactStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const toggleExpanded = (id: string) => {
     setExpandedId(expandedId === id ? null : id)
+  }
+
+  const handleContactSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setContactStatus(null)
+
+    if (!contactName.trim() || !contactEmail.trim() || !contactMessage.trim()) {
+      setContactStatus({ type: 'error', message: 'Please complete name, email, and message.' })
+      return
+    }
+
+    setIsSubmitting(true)
+
+    try {
+      const response = await fetch('/api/contacts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: contactName.trim(),
+          email: contactEmail.trim(),
+          message: contactMessage.trim(),
+        }),
+      })
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        setContactStatus({
+          type: 'error',
+          message: result?.error || 'Unable to send your message right now.',
+        })
+      } else {
+        setContactStatus({
+          type: 'success',
+          message: 'Thanks for reaching out! We received your message.',
+        })
+        setContactName('')
+        setContactEmail('')
+        setContactMessage('')
+      }
+    } catch (error) {
+      setContactStatus({
+        type: 'error',
+        message: 'Network error while sending your message. Please try again.',
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -136,7 +192,62 @@ export default function HelpPage() {
           <p className="text-muted-foreground mb-4">
             If you can't find the answer you're looking for, please don't hesitate to reach out.
           </p>
-          <Button variant="outline">Contact Support</Button>
+
+          <form onSubmit={handleContactSubmit} className="space-y-3 text-left max-w-xl mx-auto">
+            {contactStatus && (
+              <div
+                className={`p-2 rounded-md text-sm ${
+                  contactStatus.type === 'success'
+                    ? 'bg-emerald-100 text-emerald-900'
+                    : 'bg-rose-100 text-rose-900'
+                }`}
+              >
+                {contactStatus.message}
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+              <div className="space-y-1">
+                <label className="text-sm font-medium">Name</label>
+                <Input
+                  type="text"
+                  placeholder="Your name"
+                  value={contactName}
+                  onChange={(e) => setContactName(e.target.value)}
+                  disabled={isSubmitting}
+                  required
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-sm font-medium">Email</label>
+                <Input
+                  type="email"
+                  placeholder="you@example.com"
+                  value={contactEmail}
+                  onChange={(e) => setContactEmail(e.target.value)}
+                  disabled={isSubmitting}
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-sm font-medium">Message</label>
+              <textarea
+                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:border-primary focus:ring-primary/30"
+                placeholder="How can we help you?"
+                value={contactMessage}
+                onChange={(e) => setContactMessage(e.target.value)}
+                disabled={isSubmitting}
+                rows={4}
+                required
+              />
+            </div>
+
+            <Button type="submit" disabled={isSubmitting} className="w-full">
+              {isSubmitting ? 'Sending...' : 'Send message'}
+            </Button>
+          </form>
         </Card>
 
         {/* Navigation */}
