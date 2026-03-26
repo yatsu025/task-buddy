@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Header } from '@/components/header'
@@ -23,6 +23,14 @@ export default function DashboardPage() {
   })
   const [isLoading, setIsLoading] = useState(true)
 
+  const refreshDashboardData = useCallback((userId: string) => {
+    const taskStats = getTaskStats(userId)
+    setStats(taskStats)
+
+    const tasks = getUserTasks(userId)
+    setTaskSections(sortTasksForDashboard(tasks))
+  }, [])
+
   useEffect(() => {
     if (!isAuthenticated()) {
       router.push('/login')
@@ -36,15 +44,40 @@ export default function DashboardPage() {
     setUser(currentUser)
 
     if (currentUser) {
-      const taskStats = getTaskStats(currentUser.id)
-      setStats(taskStats)
-
-      const tasks = getUserTasks(currentUser.id)
-      setTaskSections(sortTasksForDashboard(tasks))
+      refreshDashboardData(currentUser.id)
     }
 
     setIsLoading(false)
-  }, [router])
+  }, [refreshDashboardData, router])
+
+  useEffect(() => {
+    if (!user?.id) return
+
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key && event.key !== 'task-buddy:tasks') return
+      refreshDashboardData(user.id)
+    }
+
+    const handleWindowFocus = () => {
+      refreshDashboardData(user.id)
+    }
+
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        refreshDashboardData(user.id)
+      }
+    }
+
+    window.addEventListener('storage', handleStorageChange)
+    window.addEventListener('focus', handleWindowFocus)
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange)
+      window.removeEventListener('focus', handleWindowFocus)
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+    }
+  }, [refreshDashboardData, user?.id])
 
   if (isLoading || !user || !stats) {
     return (
