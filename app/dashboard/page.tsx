@@ -31,6 +31,16 @@ export default function DashboardPage() {
     setTaskSections(sortTasksForDashboard(tasks))
   }, [])
 
+  const handleTaskUpdated = useCallback(() => {
+    if (!user?.id) return
+    refreshDashboardData(user.id)
+  }, [refreshDashboardData, user?.id])
+
+  const handleTaskDeleted = useCallback(() => {
+    if (!user?.id) return
+    refreshDashboardData(user.id)
+  }, [refreshDashboardData, user?.id])
+
   useEffect(() => {
     if (!isAuthenticated()) {
       router.push('/login')
@@ -170,7 +180,12 @@ export default function DashboardPage() {
             ) : (
               <div className="grid gap-4">
                 {taskSections.recent.map(task => (
-                  <TaskCard key={task.id} task={task} />
+                  <TaskCard
+                    key={task.id}
+                    task={task}
+                    onUpdate={handleTaskUpdated}
+                    onDelete={handleTaskDeleted}
+                  />
                 ))}
               </div>
             )}
@@ -194,7 +209,13 @@ export default function DashboardPage() {
             ) : (
               <div className="grid gap-4">
                 {taskSections.completed.map(task => (
-                  <TaskCard key={task.id} task={task} variant="completed" />
+                  <TaskCard
+                    key={task.id}
+                    task={task}
+                    variant="completed"
+                    onUpdate={handleTaskUpdated}
+                    onDelete={handleTaskDeleted}
+                  />
                 ))}
               </div>
             )}
@@ -218,7 +239,12 @@ export default function DashboardPage() {
             ) : (
               <div className="grid gap-4">
                 {taskSections.future.map(task => (
-                  <TaskCard key={task.id} task={task} />
+                  <TaskCard
+                    key={task.id}
+                    task={task}
+                    onUpdate={handleTaskUpdated}
+                    onDelete={handleTaskDeleted}
+                  />
                 ))}
               </div>
             )}

@@ -9,7 +9,7 @@ export function Footer() {
         <div className="flex flex-col items-center text-center gap-4">
           <div className="flex items-center gap-2">
             <span className="font-bold text-foreground/90">Task Buddy</span>
-            <span className="text-foreground/70 text-sm font-medium">© {new Date().getFullYear()}</span>
+            <span className="text-foreground/70 text-sm font-medium">© 2026</span>
           </div>
           <nav className="flex flex-wrap justify-center gap-4 text-sm font-medium">
             <Link href="/about" className="text-foreground/70 hover:text-foreground transition-colors">
@@ -26,8 +26,8 @@ export function Footer() {
             </a>
           </nav>
         </div>
-        <p className="text-center text-foreground/60 text-sm mt-4 font-medium">
-          Your personal task manager — manage, track, and complete tasks efficiently.
+        <p className="text-center text-primary text-sm mt-4 font-bold">
+          organize your day, boost your productivity 🚀
         </p>
       </div>
     </footer>

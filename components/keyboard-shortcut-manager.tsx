@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
@@ -12,8 +12,9 @@ type KeyboardShortcutManagerProps = {
 
 const isTypingElement = (target: EventTarget | null): boolean => {
   if (!(target instanceof Element)) return false
+  if (target.closest('[contenteditable="true"]')) return true
   const tagName = target.tagName.toLowerCase()
-  return tagName === 'input' || tagName === 'textarea'
+  return tagName === 'input' || tagName === 'textarea' || tagName === 'select'
 }
 
 export function KeyboardShortcutManager({
@@ -28,10 +29,12 @@ export function KeyboardShortcutManager({
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.defaultPrevented) return
 
-      const key = event.key.toLowerCase()
+      const key = typeof event.key === 'string' ? event.key.toLowerCase() : ''
+      if (!key) return
       const typing = isTypingElement(event.target)
 
-      if (typing && key !== 's' && key !== '/') return
+      // Never trigger global shortcuts while user is typing in a form field.
+      if (typing) return
 
       if (key === 's' || key === '/') {
         event.preventDefault()
